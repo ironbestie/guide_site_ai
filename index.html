@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!--<meta charset="UTF-8" />-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Гайд по нейросетям — Resight</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0b1a;
+      --text: #ffffff;
+      --text-secondary: #c0c0d6;
+      --accent-purple: #b66dff;
+      --accent-purple-light: #d1aaff;
+      --accent-green: #a8ff66;
+      --card-bg: #1a1828;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Блики */
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.25;
+      z-index: 0;
+    }
+    .glow-1 { width: 350px; height: 350px; background: var(--accent-purple); top: 5%; left: 3%; animation: float 22s infinite ease-in-out; }
+    .glow-2 { width: 300px; height: 300px; background: var(--accent-green); bottom: 8%; right: 5%; animation: float 26s infinite reverse ease-in-out; }
+    .glow-3 { width: 250px; height: 250px; background: #8a5cf5; top: 40%; left: 15%; animation: float 30s infinite ease-in-out; }
+    .glow-4 { width: 280px; height: 280px; background: #c47aff; bottom: 25%; left: 8%; animation: float 28s infinite reverse ease-in-out; }
+    .glow-5 { width: 220px; height: 220px; background: var(--accent-purple); top: 70%; right: 12%; animation: float 24s infinite ease-in-out; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      25%  { transform: translate(40px, -50px); }
+      50%  { transform: translate(-30px, 60px); }
+      75%  { transform: translate(50px, 20px); }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Шапка */
+    header {
+      padding: 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(to right, var(--accent-green), var(--accent-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover {
+      color: var(--accent-purple-light);
+      text-shadow: 0 0 10px rgba(182, 109, 255, 0.5);
+    }
+
+    /* Герой */
+    .hero {
+      padding: 100px 0 60px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 800;
+      margin-bottom: 32px;
+      background: linear-gradient(to right, var(--accent-green), var(--accent-purple-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.2;
+      animation: pulse 4s infinite alternate;
+    }
+    @keyframes pulse {
+      0% { text-shadow: 0 0 10px rgba(168, 255, 102, 0.3); }
+      100% { text-shadow: 0 0 25px rgba(168, 255, 102, 0.6); }
+    }
+    .btn {
+      display: inline-block;
+      background: var(--accent-green);
+      color: #000;
+      padding: 16px 48px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 25px rgba(168, 255, 102, 0.4);
+      animation: float-btn 3s infinite ease-in-out;
+    }
+    @keyframes float-btn {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 35px rgba(168, 255, 102, 0.7);
+    }
+
+    /* Анимация блоков */
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Гайд — теперь модный! */
+    .guide {
+      padding: 80px 0;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 60px;
+      background: linear-gradient(to right, var(--accent-purple-light), var(--accent-green));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+    .guide-content {
+      background: linear-gradient(135deg, #161424 0%, #100e1c 100%);
+      color: var(--text);
+      padding: 48px;
+      border-radius: 24px;
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 20px rgba(182, 109, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(182, 109, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-content::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(168, 255, 102, 0.05) 0%, transparent 70%);
+      animation: rotate 60s linear infinite;
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .guide-content h2 {
+      font-size: 28px;
+      margin-bottom: 24px;
+      color: var(--accent-green);
+    }
+    .guide-content h3 {
+      font-size: 22px;
+      margin: 32px 0 16px;
+      color: var(--accent-purple-light);
+    }
+    .guide-content p, .guide-content li {
+      margin-bottom: 16px;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+    .guide-content ul {
+      padding-left: 24px;
+      margin: 16px 0;
+    }
+    .guide-content a {
+      color: var(--accent-green);
+      text-decoration: underline;
+    }
+    .guide-content a:hover {
+      color: #ccff99;
+    }
+
+    /* О нас */
+    .about {
+      padding: 80px 0;
+      background: linear-gradient(135deg, #0f0d1f 0%, #0a0815 100%);
+    }
+    .about-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    .about-content h2 {
+      font-size: 36px;
+      margin-bottom: 24px;
+      color: var(--accent-purple-light);
+    }
+    .about-content p {
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    /* Примеры — 2 колонки */
+    .examples {
+      padding: 80px 0;
+    }
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-top: 40px;
+    }
+    .example-card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      transition: all 0.4s ease;
+      border: 1px solid rgba(182, 109, 255, 0.15);
+      background-position: center;
+    }
+    .example-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(182, 109, 255, 0.3);
+      border-color: rgba(182, 109, 255, 0.4);
+      background-position: center;
+    }
+    .example-img {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(45deg, #2a283c, #3a385c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      background-position: center;
+      background-size: contain;
+    }
+    .example-desc {
+      padding: 20px;
+    }
+    .example-desc h4 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: var(--accent-green);
+    }
+
+    /* Контакты */
+    .contact {
+      padding: 80px 0;
+      text-align: center;
+    }
+    .contact-box {
+      background: linear-gradient(135deg, #161424 0%, #100e1c 100%);
+      padding: 48px;
+      border-radius: 24px;
+      max-width: 700px;
+      margin: 0 auto;
+      border: 1px solid rgba(182, 109, 255, 0.25);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .contact h2 {
+      font-size: 32px;
+      margin-bottom: 24px;
+      color: var(--accent-purple-light);
+    }
+    .telegram {
+      font-size: 22px;
+      margin-top: 20px;
+      display: block;
+      color: var(--accent-green);
+      text-decoration: none;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(168, 255, 102, 0.4);
+    }
+    .telegram:hover {
+      text-decoration: underline;
+    }
+
+    /* Адаптив */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 38px; }
+      .guide-content { padding: 32px 24px; }
+      .contact h2 { font-size: 26px; }
+      .nav-links { display: none; }
+      .example-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Блики -->
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+  <div class="glow glow-4"></div>
+  <div class="glow glow-5"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo">Resight</div>
+      <div class="nav-links">
+        <a href="#guide" class="nav-link">Читать гайд</a>
+        <a href="#about" class="nav-link">О нас</a>
+        <a href="#contact" class="nav-link">Контакты</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>Гайд по нейросетям</h1>
+      <a href="#guide" class="btn">Смотреть</a>
+    </section>
+  </div>
+
+  <section class="guide" id="guide">
+  <div class="container">
+    <h2 class="section-title animate-on-scroll">Как использовать нейросети для роста бизнеса: практический гайд</h2>
+    <div class="guide-content animate-on-scroll">
+
+      <p>Этот гайд предназначен для предпринимателей, коучей, экспертов и владельцев малого бизнеса. В нём вы найдёте не теорию, а конкретные инструменты, которые можно внедрить уже сегодня — без бюджета на разработчиков, дизайнеров или маркетологов.</p>
+
+      <!-- ============ БЛОК 1 ============ -->
+      <h3>1. Генерация лендингов за 1 минуту</h3>
+      <p>Создание лендинга обычно требует дизайнера, верстальщика и нескольких дней работы. Но с помощью современных ИИ-инструментов вы можете получить готовый, адаптивный, анимированный лендинг — просто описав его текстом.</p>
+
+      <h4>Инструмент: V0 by Vercel</h4>
+      <p><strong>Бесплатно. Не требует регистрации.</strong></p>
+      <p>V0 — это генератор UI-компонентов от компании Vercel. Он создаёт готовый код на React + Tailwind CSS по текстовому описанию.</p>
+
+      <h5>Как использовать:</h5>
+      <ol>
+        <li>Перейдите на сайт <a href="https://v0.dev" target="_blank">https://v0.dev</a>.</li>
+        <li>Напишите промт на английском языке. Пример:
+          <blockquote style="background: rgba(182, 109, 255, 0.08); border-left: 3px solid var(--accent-purple); padding: 12px; margin: 16px 0; font-style: italic;">
+            A modern landing page for an AI fitness coach. Dark theme with purple and lime accents. Sections: hero, features, testimonials, CTA button. Mobile responsive.
+          </blockquote>
+        </li>
+        <li>Нажмите <strong>Generate</strong>. Через 5–10 секунд вы получите готовый HTML/JSX-код.</li>
+        <li>Скопируйте код и откройте его в браузере — лендинг будет полностью рабочим.</li>
+        <li>Чтобы опубликовать бесплатно, загрузите HTML-файл на <a href="https://app.netlify.com/drop" target="_blank">Netlify Drop</a> (drag & drop, без регистрации).</li>
+      </ol>
+
+      <div class="highlight-box">
+        <strong>Важно:</strong> V0 генерирует только визуальную часть. Логика форм, отправка данных — требует дополнительной настройки. Но для лендинга-визитки этого достаточно.
+      </div>
+
+      <!-- ============ БЛОК 2 ============ -->
+      <h3>2. Создание видео с цифровым двойником</h3>
+      <p>Запись видео — одна из самых затратных задач: нужна камера, свет, монтаж. Но сегодня вы можете создавать профессиональные ролики без съёмки — с помощью ИИ-аватара, который говорит вашим голосом и выглядит как вы.</p>
+
+      <h4>Инструмент: HeyGen</h4>
+      <p><strong>Бесплатный тариф доступен.</strong> Включает до 1 минуты видео в месяц и базовые функции.</p>
+      <p>HeyGen позволяет создать цифрового аватара на основе фото или короткого видео, клонировать ваш голос и размещать персонажа в любом интерьере.</p>
+
+      <h5>Как использовать:</h5>
+      <ol>
+        <li>Зарегистрируйтесь на <a href="https://www.heygen.com" target="_blank">heygen.com</a>.</li>
+        <li>Перейдите в раздел <strong>Avatar</strong> и создайте аватар:
+          <ul>
+            <li>Загрузите фото высокого качества ИЛИ запишите 10–15 секунд видео (говорите прямо в камеру, нейтральный фон).</li>
+            <li>Система автоматически создаст 3D-модель вашего лица.</li>
+          </ul>
+        </li>
+        <li>Перейдите в <strong>Voice</strong> и запишите голосовой клон (или используйте текст-to-speech на 30+ языках).</li>
+        <li>Создайте новый видеопроект:
+          <ul>
+            <li>Выберите аватар и голос.</li>
+            <li>Напишите сценарий (можно на русском).</li>
+            <li>Выберите фон: студия, природа, офис — или загрузите свой.</li>
+          </ul>
+        </li>
+        <li>Нажмите <strong>Render</strong>. Через 3–7 минут видео будет готово в Full HD.</li>
+      </ol>
+
+      <div class="highlight-box">
+        <strong>Пример использования:</strong> запись приветственного ролика для новых учеников курса, анонс старта программы, ответ на частые вопросы в Instagram Stories.
+      </div>
+
+      <!-- ============ БЛОК 3 ============ -->
+      <h3>3. ИИ-ассистент для продвижения бренда</h3>
+      <p>Вы не можете отвечать на сообщения 24/7. Но ваш ИИ-ассистент — может. Он знает ваши продукты, говорит вашим стилем и работает круглосуточно.</p>
+
+      <h4>Подход: RAG + OpenRouter</h4>
+      <p><strong>Бесплатно при использовании open-source моделей через OpenRouter.</strong></p>
+      <p>RAG (Retrieval-Augmented Generation) — это архитектура, при которой ИИ отвечает только на основе ваших документов (описания курсов, цены, отзывы, FAQ).</p>
+
+      <h5>Как реализовать:</h5>
+      <ol>
+        <li>Соберите все материалы в один файл (PDF, TXT или Markdown): описание услуг, цены, условия, часто задаваемые вопросы.</li>
+        <li>Зарегистрируйтесь на <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> и получите API-ключ.</li>
+        <li>Используйте простой Python-скрипт или сервис вроде <a href="https://botpress.com" target="_blank">Botpress</a> (бесплатный тариф), чтобы:
+          <ul>
+            <li>Загрузить ваши документы в векторную базу,</li>
+            <li>Настроить промт: «Ты — помощник [ваше имя]. Отвечай только на основе предоставленных документов. Не выдумывай.»</li>
+          </ul>
+        </li>
+        <li>Подключите бота к Telegram, сайту или Instagram через вебхуки.</li>
+      </ol>
+
+      <div class="highlight-box">
+        <strong>Результат:</strong> клиенты получают мгновенный ответ даже ночью. Вы экономите 10+ часов в неделю на рутинных вопросах.
+      </div>
+
+      <!-- ============ БЛОК 4 ============ -->
+      <h3>4. Три правила эффективной работы с нейросетями</h3>
+
+      <h4>Правило 1. Будьте максимально конкретны в запросах</h4>
+      <p>Плохо: «Сделай лендинг».<br>
+      Хорошо: «Лендинг для онлайн-курса по питанию для беременных. Пастельные тона, разделы: проблема, решение, программа, отзывы, кнопка “Записаться”».</p>
+
+      <h4>Правило 2. Всегда проверяйте факты</h4>
+      <p>Нейросети могут ошибаться в законах, ценах, сроках. Особенно в российской специфике. Всегда сверяйтесь с официальными источниками: НК РФ, ФНС, правила маркетплейсов.</p>
+
+      <h4>Правило 3. Не заменяйте личность — усиливайте её</h4>
+      <p>ИИ — не замена вам. Это инструмент, который освобождает ваше время для того, что вы делаете лучше всех: живого общения, стратегического мышления, эмоциональной поддержки клиентов.</p>
+
+      <div class="highlight-box" style="background: rgba(168, 255, 102, 0.1); border-color: var(--accent-green);">
+        <strong>Финальный совет:</strong> начните с одного инструмента. Сегодня — лендинг. Завтра — видео. Через неделю — ваш ИИ-ассистент уже приносит клиентов.
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.guide-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+  color: #1a1828;
+  padding: 48px;
+  border-radius: 24px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.1),
+    inset 0 0 20px rgba(182, 109, 255, 0.05);
+  border: 1px solid rgba(182, 109, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+.guide-content h3 {
+  font-size: 24px;
+  margin: 40px 0 20px;
+  color: #5d3fd3;
+  font-weight: 800;
+}
+.guide-content h4 {
+  font-size: 20px;
+  margin: 24px 0 12px;
+  color: #7e57c2;
+  font-weight: 700;
+}
+.guide-content h5 {
+  font-size: 18px;
+  margin: 20px 0 12px;
+  color: #9575cd;
+  font-weight: 600;
+}
+.guide-content p, .guide-content li {
+  margin-bottom: 16px;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #2d2b3a;
+}
+.guide-content a {
+  color: #5d3fd3;
+  text-decoration: underline;
+}
+.guide-content a:hover {
+  color: #4527a0;
+}
+.highlight-box {
+  background: rgba(182, 109, 255, 0.1);
+  border-left: 4px solid var(--accent-purple);
+  padding: 16px;
+  margin: 24px 0;
+  border-radius: 0 8px 8px 0;
+  font-weight: 600;
+}
+blockquote {
+  font-style: normal !important;
+}
+</style>
+
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-content animate-on-scroll">
+        <h2>О проекте Resight</h2>
+        <p>
+          Resight — это ИИ-ассистент для малого бизнеса в России, созданный командой Resonance.
+          Мы помогаем предпринимателям автоматизировать рутину, принимать решения на основе данных
+          и соответствовать требованиям российского законодательства — от НК РФ до правил маркетплейсов.
+        </p>
+      </div>
+    </div>
+  </section>
+
+<!-- Примеры использования -->
+<section class="examples">
+  <div class="container">
+    <h2 class="section-title animate-on-scroll">Примеры использования</h2>
+    <div class="example-grid">
+      
+      <!-- Пример 1: Видео -->
+      <div class="example-card animate-on-scroll">
+        <div class="example-img-container">
+          <img src="heygen_b.jpg" alt="Фото до использования HeyGen" class="example-img">
+        </div>
+        <div class="example-desc">
+          <h4>До HeyGen</h4>
+          <p>Запись на телефон в домашних условиях: плохое освещение, фон с посторонними звуками, требуется монтаж.</p>
+        </div>
+      </div>
+      
+      <div class="example-card animate-on-scroll">
+        <div class="example-img-container">
+          <img src="heygen_a.png" alt="Фото после использования HeyGen" class="example-img">
+        </div>
+        <div class="example-desc">
+          <h4>После HeyGen</h4>
+          <p>Профессиональное видео с вашим лицом и голосом в студийном интерьере — без камеры, света и монтажа.</p>
+        </div>
+      </div>
+
+      <!-- Пример 2: Лендинг -->
+      <div class="example-card animate-on-scroll">
+        <div class="example-img-container">
+          <img src="v0_b.jpg" alt="Лендинг до использования V0" class="example-img">
+        </div>
+        <div class="example-desc">
+          <h4>До V0 by Vercel</h4>
+          <p>Статичный шаблон из Canva: нет анимаций, не адаптирован под мобильные устройства, требует правок при каждом изменении.</p>
+        </div>
+      </div>
+      
+      <div class="example-card animate-on-scroll">
+        <div class="example-img-container">
+          <img src="v0_a.png" alt="Лендинг после использования V0" class="example-img">
+        </div>
+        <div class="example-desc">
+          <h4>После V0 by Vercel</h4>
+          <p>Адаптивный, анимированный лендинг с градиентами и современным дизайном — готов к публикации за 1 минуту.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.example-img-container {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #f0f0f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.example-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.example-card:hover .example-img {
+  transform: scale(1.03);
+}
+.example-desc {
+  padding: 20px;
+}
+.example-desc h4 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: var(--accent-green);
+  font-weight: 700;
+}
+.example-desc p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+</style>
+
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="contact-box animate-on-scroll">
+        <h2>Хотите внедрить ИИ в ваш бизнес?</h2>
+        <p>Напишите нам — поможем подобрать инструменты под вашу нишу.</p>
+        <a href="https://t.me/moly_fly" class="telegram">@moly_fly</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Анимация при прокрутке
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
